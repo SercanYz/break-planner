@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Break Planner</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#ffffff;--surface-0:#f5f5f4;--surface-1:#f0efee;--surface-2:#ffffff;
+  --text-primary:#1c1c1a;--text-secondary:#57574f;--text-muted:#8f8f86;
+  --border:rgba(0,0,0,.1);--border-strong:rgba(0,0,0,.15);--border-stronger:rgba(0,0,0,.25);
+  --bg-accent:#e8f0fe;--border-accent:#93b4f8;--text-accent:#2c5fe6;
+  --radius:8px;--font-mono:'Courier New',Courier,monospace;
+}
+@media(prefers-color-scheme:dark){:root{
+  --bg:#1a1a18;--surface-0:#1f1f1d;--surface-1:#252523;--surface-2:#2e2e2b;
+  --text-primary:#e8e8e4;--text-secondary:#a8a89e;--text-muted:#6b6b62;
+  --border:rgba(255,255,255,.1);--border-strong:rgba(255,255,255,.15);--border-stronger:rgba(255,255,255,.25);
+  --bg-accent:#1a2a4a;--border-accent:#4a72c4;--text-accent:#7aa4f0;
+}}
+body{background:var(--bg);color:var(--text-primary);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;min-height:100vh;padding:20px 16px 48px}
+.wrap{max-width:520px;margin:0 auto}
+.header{margin-bottom:1.5rem}
+.eyebrow{font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.1em;font-weight:500;margin-bottom:5px}
+h1{font-size:22px;font-weight:500;color:var(--text-primary)}
+.ctrl{background:var(--surface-1);border:.5px solid var(--border);border-radius:12px;padding:.875rem 1.25rem;margin-bottom:.625rem}
+.clabel{font-size:10px;color:var(--text-muted);margin-bottom:.625rem;text-transform:uppercase;letter-spacing:.09em;font-weight:500}
+.prow{display:flex;gap:7px;flex-wrap:wrap}
+.pill{padding:6px 14px;border-radius:var(--radius);border:.5px solid var(--border-strong);background:transparent;color:var(--text-secondary);font-size:13px;font-weight:400;cursor:pointer;transition:color .12s,border-color .12s,background .12s;font-family:inherit;line-height:1.4}
+.pill:hover{color:var(--text-primary);border-color:var(--border-stronger)}
+.pill.on{background:var(--bg-accent);border-color:var(--border-accent);color:var(--text-accent);font-weight:500}
+.sep{display:flex;align-items:center;gap:10px;margin:1.25rem 0 .75rem}
+.sep-line{flex:1;height:.5px;background:var(--border)}
+.sep-text{font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.1em;font-weight:500;white-space:nowrap}
+.legend{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:.875rem}
+.legend-item{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text-muted)}
+.legend-dot{width:8px;height:8px;border-radius:2px;flex-shrink:0}
+.tbl-wrap{border:.5px solid var(--border);border-radius:12px;overflow:hidden}
+.tbl{width:100%;border-collapse:collapse;table-layout:fixed}
+.tbl th{font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.07em;font-weight:500;padding:9px 10px 8px;border-bottom:.5px solid var(--border);text-align:left;background:var(--surface-1)}
+.tbl td{padding:9px 10px;border-bottom:.5px solid var(--border);vertical-align:top}
+.tbl tr:last-child td{border-bottom:none}
+.tbl tr.opk td{background:rgba(245,158,11,.06)}
+.tbl tr.merged td{background:rgba(99,102,241,.07)}
+.mono{font-family:var(--font-mono)}
+.footer{margin-top:.75rem;display:flex;justify-content:space-between;align-items:center;padding:0 2px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="header">
+    <div class="eyebrow">Shift rotation</div>
+    <h1>Break planner</h1>
+  </div>
+
+  <div class="ctrl">
+    <div class="clabel">Shift</div>
+    <div class="prow" id="shift-row"></div>
+  </div>
+  <div class="ctrl">
+    <div class="clabel">Starting position</div>
+    <div class="prow" id="pos-row"></div>
+  </div>
+  <div class="ctrl">
+    <div class="clabel">Break order</div>
+    <div class="prow" id="order-row"></div>
+  </div>
+
+  <div class="sep">
+    <div class="sep-line"></div>
+    <span class="sep-text">Schedule</span>
+    <div class="sep-line"></div>
+  </div>
+
+  <div class="legend">
+    <div class="legend-item"><div class="legend-dot" style="background:var(--surface-2);border:.5px solid var(--border-stronger)"></div>Scheduled break</div>
+    <div class="legend-item"><div class="legend-dot" style="background:rgba(245,158,11,.18);border:.5px solid rgba(245,158,11,.5)"></div>Opknapper break</div>
+    <div class="legend-item"><div class="legend-dot" style="background:rgba(99,102,241,.14);border:.5px solid rgba(99,102,241,.45)"></div>Combined</div>
+  </div>
+
+  <div class="tbl-wrap">
+    <table class="tbl">
+      <thead>
+        <tr>
+          <th style="width:40px">#</th>
+          <th style="width:74px">Your time</th>
+          <th>At break</th>
+          <th>Returns to</th>
+        </tr>
+      </thead>
+      <tbody id="tbody"></tbody>
+    </table>
+  </div>
+
+  <div class="footer">
+    <span style="font-size:12px;color:var(--text-muted)">Total break time</span>
+    <span id="total" style="font-family:var(--font-mono);font-size:13px;font-weight:500;color:var(--text-primary)"></span>
+  </div>
+
+</div>
+
+<script>
+const POS=['2nd Bordes','2nd Overhanger','1st Bordes','Opknapper'];
+const PC=['#3B82F6','#14B8A6','#8B5CF6','#F59E0B'];
+
+const SHIFTS={
+  1:{label:'1st shift · 03:50–12:50',startMin:230,endMin:770,breaks:[
+    {time:'03:50',s:230,d:12},{time:'04:50',s:290,d:25},
+    {time:'06:55',s:415,d:20},{time:'08:35',s:515,d:30},{time:'11:05',s:665,d:15}
+  ]},
+  2:{label:'2nd shift · 12:50–21:50',startMin:770,endMin:1310,breaks:[
+    {time:'12:50',s:770,d:20},{time:'14:30',s:870,d:25},
+    {time:'16:35',s:995,d:30},{time:'19:05',s:1145,d:20},{time:'20:45',s:1245,d:10}
+  ]}
+};
+
+let shift=1,startPos=0,order=1;
+
+function toTime(m){return`${String(Math.floor(m/60)%24).padStart(2,'0')}:${String(m%60).padStart(2,'0')}`}
+function posAt(m){return(startPos+Math.floor((m-SHIFTS[shift].startMin)/20))%4}
+function myStart(i){const b=SHIFTS[shift].breaks[i];return b.s+order*b.d}
+
+function getOpkBreaks(){
+  const sh=SHIFTS[shift];
+  const list=[];
+  let n=(3-startPos+4)%4;
+  while(true){
+    const s=sh.startMin+n*20;
+    if(s>=sh.endMin)break;
+    list.push({type:'opk',label:'Op',start:s,end:s+20});
+    n+=4;
+  }
+  return list;
+}
+
+function buildSchedule(){
+  const sh=SHIFTS[shift];
+  const reg=sh.breaks.map((b,i)=>{
+    const start=myStart(i);
+    return{type:'reg',label:String(i+1),start,end:start+b.d,vlTime:b.time};
+  });
+  const sorted=[...reg,...getOpkBreaks()].sort((a,b)=>a.start-b.start);
+  if(!sorted.length)return[];
+  const merged=[];
+  for(const item of sorted){
+    const last=merged[merged.length-1];
+    if(last&&item.start<last.end){
+      last.end=Math.max(last.end,item.end);
+      last.parts.push(item);
+    } else {
+      merged.push({start:item.start,end:item.end,parts:[item]});
+    }
+  }
+  return merged.map(r=>({
+    type:r.parts.length>1?'merged':r.parts[0].type,
+    label:r.parts.map(p=>p.label).join('·'),
+    start:r.start,end:r.end,d:r.end-r.start,
+    pos:posAt(r.start),retPos:posAt(r.end),
+    vlTime:r.parts.find(p=>p.type==='reg')?.vlTime
+  }));
+}
+
+function dot(c){return`<div style="width:7px;height:7px;border-radius:50%;background:${c};flex-shrink:0;margin-top:3px"></div>`}
+function labelColor(t){return t==='merged'?'#6366F1':t==='opk'?'#F59E0B':'var(--text-muted)'}
+function fmtDur(m){const h=Math.floor(m/60),mm=m%60;return h>0?(mm>0?`${h}h ${mm}min`:`${h}h`):`${mm} min`}
+
+function render(){
+  const schedule=buildSchedule();
+  document.getElementById('tbody').innerHTML=schedule.map(b=>`
+    <tr class="${b.type==='merged'?'merged':b.type==='opk'?'opk':''}">
+      <td class="mono" style="font-size:11px;color:${labelColor(b.type)};font-weight:${b.type!=='reg'?500:400}">${b.label}</td>
+      <td>
+        <div class="mono" style="font-size:13px;font-weight:500;color:var(--text-primary)">${toTime(b.start)}</div>
+        <div class="mono" style="font-size:12px;color:var(--text-muted);margin-top:1px">${toTime(b.end)}</div>
+        ${b.vlTime?`<div class="mono" style="font-size:10px;color:var(--text-muted);margin-top:3px;opacity:.65">Vl. ${b.vlTime}</div>`:''}
+      </td>
+      <td>
+        <div style="display:flex;align-items:flex-start;gap:6px">
+          ${dot(PC[b.pos])}
+          <div>
+            <div style="font-size:13px;color:var(--text-primary)">${POS[b.pos]}</div>
+            <div style="font-size:10px;color:var(--text-muted);margin-top:2px">${fmtDur(b.d)}</div>
+          </div>
+        </div>
+      </td>
+      <td>
+        <div style="display:flex;align-items:flex-start;gap:6px">
+          ${dot(PC[b.retPos])}
+          <span style="font-size:13px;color:var(--text-primary)">${POS[b.retPos]}</span>
+        </div>
+      </td>
+    </tr>`).join('');
+  const total=schedule.reduce((s,b)=>s+b.d,0);
+  document.getElementById('total').textContent=fmtDur(total);
+}
+
+function setShift(s){shift=s;document.querySelectorAll('#shift-row .pill').forEach(p=>p.classList.toggle('on',+p.dataset.v===s));render()}
+function setPos(p){startPos=p;document.querySelectorAll('#pos-row .pill').forEach(p2=>p2.classList.toggle('on',+p2.dataset.v===p));render()}
+function setOrder(o){order=o;document.querySelectorAll('#order-row .pill').forEach(p=>p.classList.toggle('on',+p.dataset.v===o));render()}
+
+[{id:'shift-row',items:[1,2].map(s=>({v:s,label:SHIFTS[s].label,def:s===1}))},
+ {id:'pos-row',items:POS.map((p,i)=>({v:i,label:p,def:i===0}))},
+ {id:'order-row',items:[['Vlinderaar',0],['Person 1',1],['Person 2',2],['Person 3',3]].map(([l,v])=>({v,label:l,def:v===1}))}
+].forEach(({id,items})=>{
+  const row=document.getElementById(id);
+  items.forEach(({v,label,def})=>{
+    const b=document.createElement('button');
+    b.className='pill'+(def?' on':'');
+    b.dataset.v=v; b.textContent=label;
+    b.onclick=()=>{
+      if(id==='shift-row')setShift(+v);
+      else if(id==='pos-row')setPos(+v);
+      else setOrder(+v);
+    };
+    row.appendChild(b);
+  });
+});
+
+render();
+</script>
+</body>
+</html>
