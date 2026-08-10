@@ -49,12 +49,15 @@ h1{font-size:22px;font-weight:500;color:var(--text-primary)}
 </head>
 <body>
 <div class="wrap">
-
   <div class="header">
     <div class="eyebrow">Shift rotation</div>
     <h1>Break planner</h1>
   </div>
 
+  <div class="ctrl">
+    <div class="clabel">Rotation mode</div>
+    <div class="prow" id="mode-row"></div>
+  </div>
   <div class="ctrl">
     <div class="clabel">Shift</div>
     <div class="prow" id="shift-row"></div>
@@ -98,12 +101,21 @@ h1{font-size:22px;font-weight:500;color:var(--text-primary)}
     <span style="font-size:12px;color:var(--text-muted)">Total break time</span>
     <span id="total" style="font-family:var(--font-mono);font-size:13px;font-weight:500;color:var(--text-primary)"></span>
   </div>
-
 </div>
 
 <script>
-const POS=['2nd Bordes','2nd Overhanger','1st Bordes','Opknapper'];
-const PC=['#3B82F6','#14B8A6','#8B5CF6','#F59E0B'];
+const MODES={
+  4:{
+    positions:['2nd Bordes','2nd Overhanger','1st Bordes','Opknapper'],
+    colors:['#3B82F6','#14B8A6','#8B5CF6','#F59E0B'],
+    opkIdx:3,cycle:4
+  },
+  5:{
+    positions:['2nd Bordes','2nd Overhanger','1st Bordes','Lever Tafel','Opknapper'],
+    colors:['#3B82F6','#14B8A6','#8B5CF6','#F97316','#F59E0B'],
+    opkIdx:4,cycle:5
+  }
+};
 
 const SHIFTS={
   1:{label:'1st shift · 03:50–12:50',startMin:230,endMin:770,breaks:[
@@ -116,21 +128,21 @@ const SHIFTS={
   ]}
 };
 
-let shift=1,startPos=0,order=1;
+let rotMode=4,shift=1,startPos=0,order=1;
 
 function toTime(m){return`${String(Math.floor(m/60)%24).padStart(2,'0')}:${String(m%60).padStart(2,'0')}`}
-function posAt(m){return(startPos+Math.floor((m-SHIFTS[shift].startMin)/20))%4}
+function posAt(m){const md=MODES[rotMode];return(startPos+Math.floor((m-SHIFTS[shift].startMin)/20))%md.cycle}
 function myStart(i){const b=SHIFTS[shift].breaks[i];return b.s+order*b.d}
 
 function getOpkBreaks(){
-  const sh=SHIFTS[shift];
+  const sh=SHIFTS[shift],md=MODES[rotMode];
   const list=[];
-  let n=(3-startPos+4)%4;
+  let n=(md.opkIdx-startPos+md.cycle)%md.cycle;
   while(true){
     const s=sh.startMin+n*20;
     if(s>=sh.endMin)break;
     list.push({type:'opk',label:'Op',start:s,end:s+20});
-    n+=4;
+    n+=md.cycle;
   }
   return list;
 }
@@ -166,7 +178,21 @@ function dot(c){return`<div style="width:7px;height:7px;border-radius:50%;backgr
 function labelColor(t){return t==='merged'?'#6366F1':t==='opk'?'#F59E0B':'var(--text-muted)'}
 function fmtDur(m){const h=Math.floor(m/60),mm=m%60;return h>0?(mm>0?`${h}h ${mm}min`:`${h}h`):`${mm} min`}
 
+function buildPosRow(){
+  const row=document.getElementById('pos-row');
+  row.innerHTML='';
+  MODES[rotMode].positions.forEach((p,i)=>{
+    const b=document.createElement('button');
+    b.className='pill'+(i===0?' on':'');
+    b.dataset.v=i;b.textContent=p;
+    b.onclick=()=>setPos(i);
+    row.appendChild(b);
+  });
+  startPos=0;
+}
+
 function render(){
+  const md=MODES[rotMode];
   const schedule=buildSchedule();
   document.getElementById('tbody').innerHTML=schedule.map(b=>`
     <tr class="${b.type==='merged'?'merged':b.type==='opk'?'opk':''}">
@@ -178,17 +204,17 @@ function render(){
       </td>
       <td>
         <div style="display:flex;align-items:flex-start;gap:6px">
-          ${dot(PC[b.pos])}
+          ${dot(md.colors[b.pos])}
           <div>
-            <div style="font-size:13px;color:var(--text-primary)">${POS[b.pos]}</div>
+            <div style="font-size:13px;color:var(--text-primary)">${md.positions[b.pos]}</div>
             <div style="font-size:10px;color:var(--text-muted);margin-top:2px">${fmtDur(b.d)}</div>
           </div>
         </div>
       </td>
       <td>
         <div style="display:flex;align-items:flex-start;gap:6px">
-          ${dot(PC[b.retPos])}
-          <span style="font-size:13px;color:var(--text-primary)">${POS[b.retPos]}</span>
+          ${dot(md.colors[b.retPos])}
+          <span style="font-size:13px;color:var(--text-primary)">${md.positions[b.retPos]}</span>
         </div>
       </td>
     </tr>`).join('');
@@ -196,26 +222,35 @@ function render(){
   document.getElementById('total').textContent=fmtDur(total);
 }
 
+function setMode(m){rotMode=m;document.querySelectorAll('#mode-row .pill').forEach(p=>p.classList.toggle('on',+p.dataset.v===m));buildPosRow();render()}
 function setShift(s){shift=s;document.querySelectorAll('#shift-row .pill').forEach(p=>p.classList.toggle('on',+p.dataset.v===s));render()}
 function setPos(p){startPos=p;document.querySelectorAll('#pos-row .pill').forEach(p2=>p2.classList.toggle('on',+p2.dataset.v===p));render()}
 function setOrder(o){order=o;document.querySelectorAll('#order-row .pill').forEach(p=>p.classList.toggle('on',+p.dataset.v===o));render()}
 
-[{id:'shift-row',items:[1,2].map(s=>({v:s,label:SHIFTS[s].label,def:s===1}))},
- {id:'pos-row',items:POS.map((p,i)=>({v:i,label:p,def:i===0}))},
- {id:'order-row',items:[['Vlinderaar',0],['Person 1',1],['Person 2',2],['Person 3',3]].map(([l,v])=>({v,label:l,def:v===1}))}
-].forEach(({id,items})=>{
-  const row=document.getElementById(id);
-  items.forEach(({v,label,def})=>{
-    const b=document.createElement('button');
-    b.className='pill'+(def?' on':'');
-    b.dataset.v=v; b.textContent=label;
-    b.onclick=()=>{
-      if(id==='shift-row')setShift(+v);
-      else if(id==='pos-row')setPos(+v);
-      else setOrder(+v);
-    };
-    row.appendChild(b);
-  });
+[[4,'4 rotation'],[5,'5 rotation']].forEach(([v,lbl])=>{
+  const b=document.createElement('button');
+  b.className='pill'+(v===4?' on':'');
+  b.dataset.v=v;b.textContent=lbl;
+  b.onclick=()=>setMode(v);
+  document.getElementById('mode-row').appendChild(b);
+});
+
+[1,2].forEach(s=>{
+  const b=document.createElement('button');
+  b.className='pill'+(s===1?' on':'');
+  b.dataset.v=s;b.textContent=SHIFTS[s].label;
+  b.onclick=()=>setShift(s);
+  document.getElementById('shift-row').appendChild(b);
+});
+
+buildPosRow();
+
+[['Vlinderaar',0],['Person 1',1],['Person 2',2],['Person 3',3]].forEach(([lbl,o])=>{
+  const b=document.createElement('button');
+  b.className='pill'+(o===1?' on':'');
+  b.dataset.v=o;b.textContent=lbl;
+  b.onclick=()=>setOrder(o);
+  document.getElementById('order-row').appendChild(b);
 });
 
 render();
