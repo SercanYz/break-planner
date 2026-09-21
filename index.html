@@ -21,18 +21,28 @@
 }}
 body{background:var(--bg);color:var(--text-primary);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;min-height:100vh;padding:20px 16px 48px}
 .wrap{max-width:520px;margin:0 auto}
-.header{margin-bottom:1.5rem}
 .eyebrow{font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.1em;font-weight:500;margin-bottom:5px}
-h1{font-size:22px;font-weight:500;color:var(--text-primary)}
+h1{font-size:22px;font-weight:500;color:var(--text-primary);margin-bottom:1.5rem}
 .ctrl{background:var(--surface-1);border:.5px solid var(--border);border-radius:12px;padding:.875rem 1.25rem;margin-bottom:.625rem}
 .clabel{font-size:10px;color:var(--text-muted);margin-bottom:.625rem;text-transform:uppercase;letter-spacing:.09em;font-weight:500}
 .prow{display:flex;gap:7px;flex-wrap:wrap}
 .pill{padding:6px 14px;border-radius:var(--radius);border:.5px solid var(--border-strong);background:transparent;color:var(--text-secondary);font-size:13px;font-weight:400;cursor:pointer;transition:color .12s,border-color .12s,background .12s;font-family:inherit;line-height:1.4}
 .pill:hover{color:var(--text-primary);border-color:var(--border-stronger)}
 .pill.on{background:var(--bg-accent);border-color:var(--border-accent);color:var(--text-accent);font-weight:500}
-.sep{display:flex;align-items:center;gap:10px;margin:1.25rem 0 .75rem}
-.sep-line{flex:1;height:.5px;background:var(--border)}
-.sep-text{font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.1em;font-weight:500;white-space:nowrap}
+.ot-wrap{margin-bottom:.625rem;display:none}
+.ot-wrap.visible{display:block}
+.ot-btn{width:100%;padding:.75rem 1.25rem;border-radius:12px;border:.5px solid var(--border-strong);background:var(--surface-1);color:var(--text-secondary);font-size:13px;font-weight:400;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:space-between;transition:all .15s;text-align:left}
+.ot-btn:hover{color:var(--text-primary);border-color:var(--border-stronger)}
+.ot-btn.on{background:rgba(249,115,22,.1);border-color:#F97316;color:#F97316;font-weight:500}
+.ot-track{width:32px;height:18px;border-radius:9px;border:.5px solid var(--border-stronger);background:var(--surface-0);position:relative;transition:all .2s;flex-shrink:0}
+.ot-track::after{content:'';position:absolute;width:12px;height:12px;border-radius:50%;background:var(--text-muted);top:2px;left:2px;transition:all .2s}
+.ot-btn.on .ot-track{background:#F97316;border-color:#F97316}
+.ot-btn.on .ot-track::after{background:#fff;left:16px}
+.tabs{display:flex;gap:0;margin:1.25rem 0 1rem;background:var(--surface-1);border:.5px solid var(--border);border-radius:12px;padding:4px}
+.tab-btn{flex:1;padding:7px 10px;border-radius:9px;border:none;background:transparent;color:var(--text-muted);font-size:13px;font-weight:400;cursor:pointer;font-family:inherit;transition:all .15s}
+.tab-btn.on{background:var(--bg);color:var(--text-primary);font-weight:500;box-shadow:0 1px 3px rgba(0,0,0,.1)}
+.tab-content{display:none}
+.tab-content.visible{display:block}
 .legend{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:.875rem}
 .legend-item{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text-muted)}
 .legend-dot{width:8px;height:8px;border-radius:2px;flex-shrink:0}
@@ -43,16 +53,37 @@ h1{font-size:22px;font-weight:500;color:var(--text-primary)}
 .tbl tr:last-child td{border-bottom:none}
 .tbl tr.opk td{background:rgba(245,158,11,.06)}
 .tbl tr.merged td{background:rgba(99,102,241,.07)}
+/* Best tab */
+.best-card{background:rgba(16,185,129,.08);border:.5px solid #10B981;border-radius:12px;padding:1rem 1.25rem;margin-bottom:.875rem}
+.best-card-label{font-size:10px;color:#10B981;text-transform:uppercase;letter-spacing:.08em;font-weight:600;margin-bottom:.75rem}
+.assign-row{display:flex;align-items:center;justify-content:space-between;padding:6px 0;border-bottom:.5px solid rgba(16,185,129,.2)}
+.assign-row:last-of-type{border-bottom:none}
+.assign-left{display:flex;align-items:center;gap:7px}
+.assign-person{font-size:13px;font-weight:500;color:var(--text-primary);min-width:60px}
+.assign-arrow{font-size:12px;color:var(--text-muted)}
+.assign-pos{font-size:13px;color:var(--text-primary)}
+.assign-mins{font-family:var(--font-mono);font-size:12px;color:var(--text-secondary)}
+.best-total{display:flex;justify-content:space-between;align-items:center;margin-top:.75rem;padding-top:.625rem;border-top:.5px solid rgba(16,185,129,.2)}
+.alt-label{font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.08em;font-weight:500;margin-bottom:.5rem}
+.alt-wrap{border:.5px solid var(--border);border-radius:12px;overflow:hidden}
+.alt-row{padding:10px 14px;border-bottom:.5px solid var(--border);display:flex;align-items:center;gap:12px}
+.alt-row:last-child{border-bottom:none}
+.alt-num{font-family:var(--font-mono);font-size:11px;color:var(--text-muted);min-width:16px}
+.alt-assignments{flex:1}
+.alt-line{display:flex;align-items:center;gap:5px;margin-bottom:2px}
+.alt-line:last-child{margin-bottom:0}
+.alt-total{font-family:var(--font-mono);font-size:12px;font-weight:500;color:var(--text-primary);text-align:right;flex-shrink:0}
 .mono{font-family:var(--font-mono)}
 .footer{margin-top:.75rem;display:flex;justify-content:space-between;align-items:center;padding:0 2px}
+.sep{display:flex;align-items:center;gap:10px;margin:1.25rem 0 .75rem}
+.sep-line{flex:1;height:.5px;background:var(--border)}
+.sep-text{font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.1em;font-weight:500;white-space:nowrap}
 </style>
 </head>
 <body>
 <div class="wrap">
-  <div class="header">
-    <div class="eyebrow">Shift rotation</div>
-    <h1>Break planner</h1>
-  </div>
+  <div class="eyebrow">Shift rotation</div>
+  <h1>Break planner</h1>
 
   <div class="ctrl">
     <div class="clabel">Rotation mode</div>
@@ -62,61 +93,69 @@ h1{font-size:22px;font-weight:500;color:var(--text-primary)}
     <div class="clabel">Shift</div>
     <div class="prow" id="shift-row"></div>
   </div>
-  <div class="ctrl">
-    <div class="clabel">Starting position</div>
-    <div class="prow" id="pos-row"></div>
-  </div>
-  <div class="ctrl">
-    <div class="clabel">Break order</div>
-    <div class="prow" id="order-row"></div>
+  <div class="ot-wrap" id="ot-wrap">
+    <button class="ot-btn" id="ot-btn" onclick="toggleOvertime()">
+      <span>Overtime &mdash; breaks 4 &amp; 5 extended by 5 min</span>
+      <div class="ot-track"></div>
+    </button>
   </div>
 
-  <div class="sep">
-    <div class="sep-line"></div>
-    <span class="sep-text">Schedule</span>
-    <div class="sep-line"></div>
+  <div class="tabs">
+    <button class="tab-btn on" id="tab-schedule" onclick="setTab('schedule')">My schedule</button>
+    <button class="tab-btn" id="tab-best" onclick="setTab('best')">Best positions</button>
   </div>
 
-  <div class="legend">
-    <div class="legend-item"><div class="legend-dot" style="background:var(--surface-2);border:.5px solid var(--border-stronger)"></div>Scheduled break</div>
-    <div class="legend-item"><div class="legend-dot" style="background:rgba(245,158,11,.18);border:.5px solid rgba(245,158,11,.5)"></div>Opknapper break</div>
-    <div class="legend-item"><div class="legend-dot" style="background:rgba(99,102,241,.14);border:.5px solid rgba(99,102,241,.45)"></div>Combined</div>
+  <!-- My schedule -->
+  <div class="tab-content visible" id="content-schedule">
+    <div class="ctrl">
+      <div class="clabel">Starting position</div>
+      <div class="prow" id="pos-row"></div>
+    </div>
+    <div class="ctrl">
+      <div class="clabel">Break order</div>
+      <div class="prow" id="order-row"></div>
+    </div>
+    <div class="sep">
+      <div class="sep-line"></div>
+      <span class="sep-text">Schedule</span>
+      <div class="sep-line"></div>
+    </div>
+    <div class="legend">
+      <div class="legend-item"><div class="legend-dot" style="background:var(--surface-2);border:.5px solid var(--border-stronger)"></div>Scheduled break</div>
+      <div class="legend-item"><div class="legend-dot" style="background:rgba(245,158,11,.18);border:.5px solid rgba(245,158,11,.5)"></div>Opknapper break</div>
+      <div class="legend-item"><div class="legend-dot" style="background:rgba(99,102,241,.14);border:.5px solid rgba(99,102,241,.45)"></div>Combined</div>
+    </div>
+    <div class="tbl-wrap">
+      <table class="tbl">
+        <thead>
+          <tr>
+            <th style="width:40px">#</th>
+            <th style="width:74px">Your time</th>
+            <th>At break</th>
+            <th>Returns to</th>
+          </tr>
+        </thead>
+        <tbody id="tbody"></tbody>
+      </table>
+    </div>
+    <div class="footer">
+      <span style="font-size:12px;color:var(--text-muted)">Total break time</span>
+      <span id="total" style="font-family:var(--font-mono);font-size:13px;font-weight:500;color:var(--text-primary)"></span>
+    </div>
   </div>
 
-  <div class="tbl-wrap">
-    <table class="tbl">
-      <thead>
-        <tr>
-          <th style="width:40px">#</th>
-          <th style="width:74px">Your time</th>
-          <th>At break</th>
-          <th>Returns to</th>
-        </tr>
-      </thead>
-      <tbody id="tbody"></tbody>
-    </table>
-  </div>
-
-  <div class="footer">
-    <span style="font-size:12px;color:var(--text-muted)">Total break time</span>
-    <span id="total" style="font-family:var(--font-mono);font-size:13px;font-weight:500;color:var(--text-primary)"></span>
+  <!-- Best positions -->
+  <div class="tab-content" id="content-best">
+    <p style="font-size:12px;color:var(--text-muted);margin-bottom:.875rem">Best starting position for each person to maximise total break time combined.</p>
+    <div id="best-content"></div>
   </div>
 </div>
 
 <script>
 const MODES={
-  4:{
-    positions:['2nd Bordes','2nd Overhanger','1st Bordes','Opknapper'],
-    colors:['#3B82F6','#14B8A6','#8B5CF6','#F59E0B'],
-    opkIdx:3,cycle:4
-  },
-  5:{
-    positions:['2nd Bordes','2nd Overhanger','1st Bordes','Lever Tafel','Opknapper'],
-    colors:['#3B82F6','#14B8A6','#8B5CF6','#F97316','#F59E0B'],
-    opkIdx:4,cycle:5
-  }
+  4:{positions:['2nd Bordes','2nd Overhanger','1st Bordes','Opknapper'],colors:['#3B82F6','#14B8A6','#8B5CF6','#F59E0B'],opkIdx:3,cycle:4},
+  5:{positions:['2nd Bordes','2nd Overhanger','1st Bordes','Lever Tafel','Opknapper'],colors:['#3B82F6','#14B8A6','#8B5CF6','#F97316','#F59E0B'],opkIdx:4,cycle:5}
 };
-
 const SHIFTS={
   1:{label:'1st shift · 03:50–12:50',startMin:230,endMin:770,breaks:[
     {time:'03:50',s:230,d:12},{time:'04:50',s:290,d:25},
@@ -128,55 +167,71 @@ const SHIFTS={
   ]}
 };
 
-let rotMode=4,shift=1,startPos=0,order=1;
+let rotMode=4,shift=1,startPos=0,order=1,overtime=false,activeTab='schedule';
 
 function toTime(m){return`${String(Math.floor(m/60)%24).padStart(2,'0')}:${String(m%60).padStart(2,'0')}`}
-function posAt(m){const md=MODES[rotMode];return(startPos+Math.floor((m-SHIFTS[shift].startMin)/20))%md.cycle}
-function myStart(i){const b=SHIFTS[shift].breaks[i];return b.s+order*b.d}
+function fmtDur(m){const h=Math.floor(m/60),mm=m%60;return`${h}'${String(mm).padStart(2,'0')}"`}
 
-function getOpkBreaks(){
+function calcSchedule(spOverride,ordOverride){
+  const sp=spOverride!==undefined?spOverride:startPos;
+  const ord=ordOverride!==undefined?ordOverride:order;
   const sh=SHIFTS[shift],md=MODES[rotMode];
-  const list=[];
-  let n=(md.opkIdx-startPos+md.cycle)%md.cycle;
-  while(true){
-    const s=sh.startMin+n*20;
-    if(s>=sh.endMin)break;
-    list.push({type:'opk',label:'Op',start:s,end:s+20});
-    n+=md.cycle;
-  }
-  return list;
-}
-
-function buildSchedule(){
-  const sh=SHIFTS[shift];
+  function posAtW(m){return(sp+Math.floor((m-sh.startMin)/20))%md.cycle}
+  function getD(i){const b=sh.breaks[i];return b.d+(overtime&&shift===2&&i>=3?5:0)}
+  function myStart(i){return sh.breaks[i].s+ord*getD(i)}
   const reg=sh.breaks.map((b,i)=>{
-    const start=myStart(i);
-    return{type:'reg',label:String(i+1),start,end:start+b.d,vlTime:b.time};
+    const d=getD(i),start=myStart(i);
+    return{type:'reg',label:String(i+1),start,end:start+d,vlTime:b.time,extended:overtime&&shift===2&&i>=3};
   });
-  const sorted=[...reg,...getOpkBreaks()].sort((a,b)=>a.start-b.start);
+  const opkList=[];
+  let n=(md.opkIdx-sp+md.cycle)%md.cycle;
+  while(true){const s=sh.startMin+n*20;if(s>=sh.endMin)break;opkList.push({type:'opk',label:'Op',start:s,end:s+20,extended:false});n+=md.cycle;}
+  const sorted=[...reg,...opkList].sort((a,b)=>a.start-b.start);
   if(!sorted.length)return[];
   const merged=[];
   for(const item of sorted){
     const last=merged[merged.length-1];
-    if(last&&item.start<last.end){
-      last.end=Math.max(last.end,item.end);
-      last.parts.push(item);
-    } else {
-      merged.push({start:item.start,end:item.end,parts:[item]});
-    }
+    if(last&&item.start<last.end){last.end=Math.max(last.end,item.end);last.parts.push(item);}
+    else merged.push({start:item.start,end:item.end,parts:[item]});
   }
   return merged.map(r=>({
     type:r.parts.length>1?'merged':r.parts[0].type,
     label:r.parts.map(p=>p.label).join('·'),
     start:r.start,end:r.end,d:r.end-r.start,
-    pos:posAt(r.start),retPos:posAt(r.end),
-    vlTime:r.parts.find(p=>p.type==='reg')?.vlTime
+    pos:posAtW(r.start),retPos:posAtW(r.end),
+    vlTime:r.parts.find(p=>p.type==='reg')?.vlTime,
+    extended:r.parts.some(p=>p.extended)
   }));
 }
 
-function dot(c){return`<div style="width:7px;height:7px;border-radius:50%;background:${c};flex-shrink:0;margin-top:3px"></div>`}
+function totalFor(sp,ord){return calcSchedule(sp,ord).reduce((s,b)=>s+b.d,0)}
+
+function getBestAssignments(){
+  const md=MODES[rotMode];
+  const n=md.cycle;
+  const results=[];
+  // try all permutations of 4 distinct positions for P1, P2, P3, P4
+  for(let i=0;i<n;i++)for(let j=0;j<n;j++){if(j===i)continue;for(let k=0;k<n;k++){
+    if(k===i||k===j)continue;for(let l=0;l<n;l++){
+    if(l===i||l===j||l===k)continue;
+    const sps=[i,j,k,l];
+    const perPerson=[1,2,3,4].map((ord,idx)=>({
+      ord,sp:sps[idx],
+      posName:md.positions[sps[idx]],
+      color:md.colors[sps[idx]],
+      mins:totalFor(sps[idx],ord)
+    }));
+    const total=perPerson.reduce((s,p)=>s+p.mins,0);
+    const used=new Set(sps);
+    const remaining=[...Array(n).keys()].filter(x=>!used.has(x)).map(x=>md.positions[x]);
+    results.push({perPerson,total,remaining});
+  }}}
+  results.sort((a,b)=>b.total-a.total);
+  return results;
+}
+
+function dot(c,size=7){return`<div style="width:${size}px;height:${size}px;border-radius:50%;background:${c};flex-shrink:0"></div>`}
 function labelColor(t){return t==='merged'?'#6366F1':t==='opk'?'#F59E0B':'var(--text-muted)'}
-function fmtDur(m){const h=Math.floor(m/60),mm=m%60;return h>0?(mm>0?`${h}h ${mm}min`:`${h}h`):`${mm} min`}
 
 function buildPosRow(){
   const row=document.getElementById('pos-row');
@@ -191,9 +246,23 @@ function buildPosRow(){
   startPos=0;
 }
 
+function updateOtUI(){
+  document.getElementById('ot-wrap').classList.toggle('visible',shift===2);
+  document.getElementById('ot-btn').classList.toggle('on',overtime);
+}
+
+function setTab(t){
+  activeTab=t;
+  document.getElementById('tab-schedule').classList.toggle('on',t==='schedule');
+  document.getElementById('tab-best').classList.toggle('on',t==='best');
+  document.getElementById('content-schedule').classList.toggle('visible',t==='schedule');
+  document.getElementById('content-best').classList.toggle('visible',t==='best');
+  if(t==='best')renderBest();
+}
+
 function render(){
   const md=MODES[rotMode];
-  const schedule=buildSchedule();
+  const schedule=calcSchedule();
   document.getElementById('tbody').innerHTML=schedule.map(b=>`
     <tr class="${b.type==='merged'?'merged':b.type==='opk'?'opk':''}">
       <td class="mono" style="font-size:11px;color:${labelColor(b.type)};font-weight:${b.type!=='reg'?500:400}">${b.label}</td>
@@ -201,6 +270,7 @@ function render(){
         <div class="mono" style="font-size:13px;font-weight:500;color:var(--text-primary)">${toTime(b.start)}</div>
         <div class="mono" style="font-size:12px;color:var(--text-muted);margin-top:1px">${toTime(b.end)}</div>
         ${b.vlTime?`<div class="mono" style="font-size:10px;color:var(--text-muted);margin-top:3px;opacity:.65">Vl. ${b.vlTime}</div>`:''}
+        ${b.extended?`<div style="font-size:10px;color:#F97316;margin-top:3px;font-weight:500">+5 min overtime</div>`:''}
       </td>
       <td>
         <div style="display:flex;align-items:flex-start;gap:6px">
@@ -218,12 +288,59 @@ function render(){
         </div>
       </td>
     </tr>`).join('');
-  const total=schedule.reduce((s,b)=>s+b.d,0);
-  document.getElementById('total').textContent=fmtDur(total);
+  document.getElementById('total').textContent=fmtDur(schedule.reduce((s,b)=>s+b.d,0));
+  if(activeTab==='best')renderBest();
 }
 
+function renderBest(){
+  const results=getBestAssignments();
+  const best=results[0];
+  const alts=results.slice(1,4);
+
+  let html=`<div class="best-card">
+    <div class="best-card-label">Best assignment</div>
+    ${best.perPerson.map(p=>`
+      <div class="assign-row">
+        <div class="assign-left">
+          ${dot(p.color,8)}
+          <span class="assign-person">Person ${p.ord}</span>
+          <span class="assign-arrow">→</span>
+          <span class="assign-pos">${p.posName}</span>
+        </div>
+        <span class="assign-mins">${fmtDur(p.mins)}</span>
+      </div>`).join('')}
+    ${best.remaining.length?`<div style="font-size:11px;color:var(--text-muted);margin-top:.625rem">Vlinderaar / remaining: ${best.remaining.join(', ')}</div>`:''}
+    <div class="best-total">
+      <span style="font-size:12px;color:var(--text-muted)">Total combined</span>
+      <span style="font-family:var(--font-mono);font-size:14px;font-weight:600;color:#10B981">${fmtDur(best.total)}</span>
+    </div>
+  </div>`;
+
+  if(alts.length){
+    html+=`<div class="alt-label">Alternatives</div><div class="alt-wrap">`;
+    alts.forEach((r,i)=>{
+      html+=`<div class="alt-row">
+        <div class="alt-num">${i+2}</div>
+        <div class="alt-assignments">
+          ${r.perPerson.map(p=>`
+            <div class="alt-line">
+              ${dot(p.color,6)}
+              <span style="font-size:12px;color:var(--text-secondary)">P${p.ord} → ${p.posName}</span>
+              <span style="font-family:var(--font-mono);font-size:11px;color:var(--text-muted);margin-left:4px">${fmtDur(p.mins)}</span>
+            </div>`).join('')}
+        </div>
+        <div class="alt-total">${fmtDur(r.total)}</div>
+      </div>`;
+    });
+    html+=`</div>`;
+  }
+
+  document.getElementById('best-content').innerHTML=html;
+}
+
+function toggleOvertime(){overtime=!overtime;updateOtUI();render()}
 function setMode(m){rotMode=m;document.querySelectorAll('#mode-row .pill').forEach(p=>p.classList.toggle('on',+p.dataset.v===m));buildPosRow();render()}
-function setShift(s){shift=s;document.querySelectorAll('#shift-row .pill').forEach(p=>p.classList.toggle('on',+p.dataset.v===s));render()}
+function setShift(s){shift=s;if(s===1)overtime=false;document.querySelectorAll('#shift-row .pill').forEach(p=>p.classList.toggle('on',+p.dataset.v===s));updateOtUI();render()}
 function setPos(p){startPos=p;document.querySelectorAll('#pos-row .pill').forEach(p2=>p2.classList.toggle('on',+p2.dataset.v===p));render()}
 function setOrder(o){order=o;document.querySelectorAll('#order-row .pill').forEach(p=>p.classList.toggle('on',+p.dataset.v===o));render()}
 
@@ -234,7 +351,6 @@ function setOrder(o){order=o;document.querySelectorAll('#order-row .pill').forEa
   b.onclick=()=>setMode(v);
   document.getElementById('mode-row').appendChild(b);
 });
-
 [1,2].forEach(s=>{
   const b=document.createElement('button');
   b.className='pill'+(s===1?' on':'');
@@ -242,10 +358,8 @@ function setOrder(o){order=o;document.querySelectorAll('#order-row .pill').forEa
   b.onclick=()=>setShift(s);
   document.getElementById('shift-row').appendChild(b);
 });
-
 buildPosRow();
-
-[['Vlinderaar',0],['Person 1',1],['Person 2',2],['Person 3',3]].forEach(([lbl,o])=>{
+[['Vlinderaar',0],['Person 1',1],['Person 2',2],['Person 3',3],['Person 4',4]].forEach(([lbl,o])=>{
   const b=document.createElement('button');
   b.className='pill'+(o===1?' on':'');
   b.dataset.v=o;b.textContent=lbl;
@@ -253,6 +367,7 @@ buildPosRow();
   document.getElementById('order-row').appendChild(b);
 });
 
+updateOtUI();
 render();
 </script>
 </body>
